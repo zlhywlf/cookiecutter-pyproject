@@ -4,7 +4,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
 import pathlib
-from typing import Any, Dict, Optional, Union
+from typing import Optional, Union
 
 
 class Result:
@@ -15,12 +15,10 @@ class Result:
         exception: Optional[Union[Exception, SystemExit]],
         exit_code: Optional[Union[str, int]],
         project_dir: Optional[str],
-        context: Optional[Dict[str, Any]],
     ) -> None:
         """Init."""
         self.exception = exception
         self.exit_code = exit_code
-        self.context = context
         self._project_dir = project_dir
 
     @property

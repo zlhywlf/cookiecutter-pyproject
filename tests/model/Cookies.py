@@ -3,13 +3,12 @@
 Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
-import pathlib
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import py
-from cookiecutter.generate import generate_context
 from cookiecutter.main import cookiecutter
-from cookiecutter.prompt import prompt_for_config
+from jinja2 import Environment
+from pydantic import BaseModel
 
 from tests.model.Result import Result
 
@@ -31,27 +30,25 @@ class Cookies:
         self._counter += 1
         return output_dir
 
-    def bake(self, extra_context: Optional[Dict[str, Any]] = None, template: Optional[str] = None) -> Result:
+    def bake(self, context: BaseModel) -> Result:
         """Generate project files."""
         exception: Optional[Union[Exception, SystemExit]] = None
         exit_code: Optional[Union[str, int]] = 0
         project_dir = None
-        context = None
-
-        if template is None:
-            template = self._default_template
-        context_file = pathlib.Path(template) / "cookiecutter.json"
+        extra_context = context.model_dump()
         try:
-            context = prompt_for_config(
-                generate_context(context_file=str(context_file), extra_context=extra_context), no_input=True
-            )
             project_dir = cookiecutter(
-                template,
+                self._default_template,
                 no_input=True,
                 extra_context=extra_context,
                 output_dir=str(self._new_output_dir()),
                 config_file=str(self._config_file),
             )
+
+            for k, v in extra_context.items():
+                if isinstance(v, str) and "{{" in v and "}}" in v:
+                    real = Environment(autoescape=True).from_string(v).render(cookiecutter=extra_context)
+                    setattr(context, k, real)
         except SystemExit as e:
             if e.code != 0:
                 exception = e
@@ -59,9 +56,4 @@ class Cookies:
         except Exception as e:  # noqa: BLE001
             exception = e
             exit_code = -1
-        return Result(
-            exception=exception,
-            exit_code=exit_code,
-            project_dir=project_dir,
-            context=context,
-        )
+        return Result(exception=exception, exit_code=exit_code, project_dir=project_dir)

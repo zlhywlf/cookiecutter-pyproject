@@ -42,12 +42,12 @@ allow-star-arg-any = true
 convention = "google"
 
 [tool.pytest.ini_options]
-pythonpath = ["tests"]
+pythonpath = ["tests", "hooks"]
 
 [tool.mypy]
 strict = true
 python_version = "3.7"
-files = ["tests"]
+files = ["tests", "hooks"]
 
 [[tool.mypy.overrides]]
 module = ["py", "yaml", "cookiecutter.generate", "cookiecutter.main", "cookiecutter.prompt"]
