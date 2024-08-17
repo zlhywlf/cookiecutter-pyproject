@@ -15,6 +15,8 @@ class Context(BaseModel):
     project_name: str = f'Python Project {datetime.now(tz=timezone(timedelta(hours=8))).strftime("%Y%m%d%H%M%S")}'
     project_slug: str = "{{ cookiecutter.project_name.lower().replace(' ', '_') }}"
     author: str = "Anonymous"
+    email: str = "Anonymous"
+    description: str = "The {{ cookiecutter.project_name }} application."
 
 
 def generate_context() -> None:
