@@ -5,7 +5,7 @@ Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 
 from faker import Faker
 
-from hooks.context import Context
+from hooks.pre_prompt import Context
 from tests.model.Cookies import Cookies
 
 
