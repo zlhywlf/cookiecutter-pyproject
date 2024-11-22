@@ -19,11 +19,15 @@ classifiers = [
 dependencies = [
 ]
 
+[project.optional-dependencies]
+dev = [
+]
+
 [project.urls]
 "Homepage" = ""
 
 [project.scripts]
-{{ cookiecutter.project_slug }} = "{{ cookiecutter.project_slug }}.__main__:main"
+{{ cookiecutter.project_slug } } = "{{ cookiecutter.project_slug }}.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/{{ cookiecutter.project_slug }}"]

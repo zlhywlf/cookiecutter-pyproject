@@ -10,6 +10,16 @@ classifiers = [
   "Programming Language :: Python :: 3.7",
 ]
 
+[project.optional-dependencies]
+dev = [
+  "cookiecutter~=2.6.0",
+  "pytest~=7.4.0",
+  "faker~=18.13.0",
+  "pydantic~=2.5.0",
+  "ruff~=0.6.0",
+  "mypy~=1.4.0",
+]
+
 [tool.ruff]
 line-length = 120
 fix = true
