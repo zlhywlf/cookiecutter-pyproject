@@ -3,7 +3,7 @@
 ## 生成项目
 
 ```shell
-pip3 install cookiecutter
+pip3 install cookiecutter pydantic -i https://mirrors.aliyun.com/pypi/simple
 cookiecutter https://github.com/zlhywlf/cookiecutter-pyproject.git
 ```
 
@@ -16,5 +16,5 @@ cookiecutter https://github.com/zlhywlf/cookiecutter-pyproject.git
 ### 初始化
 
 ```shell
-pip3 install -e .[dev] -i https://mirrors.aliyun.com/pypi/simple;
+pip3 install -e .[dev] -i https://mirrors.aliyun.com/pypi/simple
 ```
