@@ -10,3 +10,5 @@ __pycache__
 .ruff_cache
 htmlcov
 src/{{ cookiecutter.project_slug }}/_version.py
+.env
+*.log*

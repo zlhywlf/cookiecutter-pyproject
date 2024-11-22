@@ -6,28 +6,28 @@ build-backend = "hatchling.build"
 name = "{{ cookiecutter.project_slug }}"
 readme = "README.md"
 dynamic = ["version"]
-requires-python = ">=3.7"
+requires-python = ">={{ cookiecutter.__py_version }}"
 description = "{{ cookiecutter.description }}."
 authors = [
   { name = "{{ cookiecutter.author }}", email = "{{ cookiecutter.email }}" },
 ]
 classifiers = [
-  "Framework :: AsyncIO",
-  "Framework :: Pydantic",
-  "Programming Language :: Python :: 3.7",
 ]
 dependencies = [
 ]
 
 [project.optional-dependencies]
 dev = [
+{%- for dependency in cookiecutter.__dev_dependencies %}
+  "{{ dependency }}",
+{%- endfor %}
 ]
 
 [project.urls]
 "Homepage" = ""
 
 [project.scripts]
-{{ cookiecutter.project_slug } } = "{{ cookiecutter.project_slug }}.__main__:main"
+{{ cookiecutter.project_slug }} = "{{ cookiecutter.project_slug }}.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/{{ cookiecutter.project_slug }}"]
@@ -84,9 +84,19 @@ DEBUG = true
 
 [tool.mypy]
 strict = true
-python_version = "3.7"
+python_version = "{{ cookiecutter.__py_version }}"
 files = ["src/{{ cookiecutter.project_slug }}", "tests"]
 
 [[tool.mypy.overrides]]
 module = []
 ignore_missing_imports = true
+
+[tool.coverage.report]
+exclude_also = [
+  "if __name__ == .__main__.:",
+  "@(abc\\.)?abstractmethod",
+]
+omit = [
+  "src/{{ cookiecutter.project_slug }}/_version.py",
+  "tests/*",
+]

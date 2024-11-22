@@ -1,11 +1,11 @@
 {
   "name": "{{ cookiecutter.project_slug }}",
-  "image": "mcr.microsoft.com/devcontainers/python:1-3.7-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/python:1-{{ cookiecutter.__py_version }}-bullseye",
   "containerEnv": {
     "PYTHONPATH": "${containerWorkspaceFolder}/src:${containerWorkspaceFolder}/tests",
     "TZ": "Asia/Shanghai"
   },
-  "postCreateCommand": "bash ./init.sh",
+  "postCreateCommand": "pip3 install -e .[dev] -i https://mirrors.aliyun.com/pypi/simple",
   "customizations": {
     "vscode": {
       "settings": {
