@@ -30,7 +30,7 @@ class Context(BaseModel):
     project_slug: str = "{{ cookiecutter.project_name.lower().replace(' ', '_') }}"
     author: str = "Anonymous"
     email: str = "Anonymous"
-    description: str = "The {{ cookiecutter.project_name }} application."
+    description: str = "The {{ cookiecutter.project_name }} application"
     dev_dependencies: List[str] = Field(default_factory=get_dev_dependencies, serialization_alias="__dev_dependencies")
 
     @computed_field(alias="__py_version")
