@@ -1,6 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from typing import TYPE_CHECKING
+
+from cookiecutter.main import cookiecutter
+from jinja2 import Environment
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import py
+    from _typeshed import DataclassInstance
 
 
 @dataclass(frozen=True)
@@ -15,9 +25,29 @@ class Result:
 class Baker:
     """baker."""
 
-    def bake(self, context: object) -> Result:
+    def __init__(self, template_path: Path, output_path: py.path.local, config_path: py.path.local) -> None:
+        """Init."""
+        self.template_path = template_path
+        self.output_path = output_path
+        self.config_path = config_path
+
+    def bake(self, context: DataclassInstance) -> Result:
         """Generate project files.
 
         Returns:
             Result
         """
+        extra_context = asdict(context)
+        project_dir = cookiecutter(
+            self.template_path.absolute().as_posix(),
+            no_input=True,
+            extra_context=extra_context,
+            output_dir=self.output_path.strpath,
+            config_file=self.config_path.strpath,
+        )
+
+        for k, v in extra_context.items():
+            if isinstance(v, str) and "{{" in v and "}}" in v:
+                real = Environment(autoescape=True).from_string(v).render(cookiecutter=extra_context)
+                setattr(context, k, real)
+        return Result(exception=None, exit_code=0, project_dir=project_dir)

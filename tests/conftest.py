@@ -6,7 +6,7 @@ import pytest
 import yaml
 from faker import Faker
 
-from tests.model.cookies import Cookies
+from tests.core import Baker
 
 
 @pytest.fixture(scope="session")
@@ -20,27 +20,29 @@ def faker() -> Faker:
 
 
 @pytest.fixture(scope="session")
-def config_file(tmpdir_factory: pytest.TempdirFactory) -> py.path.local:
+def config_path(tmpdir_factory: pytest.TempdirFactory) -> py.path.local:
     """Generate cookiecutter configuration file.
 
     Returns:
         local
     """
     user_dir = tmpdir_factory.mktemp("user_dir")
-    config_file = user_dir.join(pathlib.Path("config"))
-    config = {
-        "cookiecutters_dir": str(user_dir.mkdir("cookiecutters")),
-        "replay_dir": str(user_dir.mkdir("cookiecutter_replay")),
-    }
-    with config_file.open("w", encoding="utf-8") as f:
-        yaml.dump(config, f, Dumper=yaml.Dumper)
-    return config_file
+    config = user_dir.join(pathlib.Path("config.yaml"))
+    with config.open("w", encoding="utf-8") as f:
+        yaml.dump(
+            {
+                "cookiecutters_dir": user_dir.mkdir("cookiecutters").strpath,
+                "replay_dir": user_dir.mkdir("cookiecutter_replay").strpath,
+            },
+            f,
+            Dumper=yaml.Dumper,
+        )
+    return config
 
 
 @pytest.fixture
-def cookies(tmpdir: py.path.local, config_file: py.path.local) -> Generator[Cookies, Any, None]:
+def baker(tmpdir: py.path.local, config_path: py.path.local) -> Generator[Baker, Any, None]:
     """Yield an instance of the Cookies helper class that can be used to generate a project from a template."""
-    output_dir = tmpdir.mkdir("cookies")
-    output_factory = output_dir.mkdir
-    yield Cookies(str(pathlib.Path().absolute()), output_factory, config_file)
-    output_dir.remove()
+    output_path = tmpdir.mkdir("cookies")
+    yield Baker(pathlib.Path(), output_path, config_path)
+    output_path.remove()

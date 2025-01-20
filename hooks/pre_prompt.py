@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 import pathlib
 import subprocess  # noqa: S404
 import sys
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
 
 import pkg_resources  # type: ignore[import]
-from pydantic import BaseModel, Field, computed_field
 
 
 def get_dev_dependencies() -> list[str]:
@@ -23,7 +24,8 @@ def get_dev_dependencies() -> list[str]:
     return get_dependency_versions(*dev_dependencies)
 
 
-class Context(BaseModel):
+@dataclass
+class Context:
     """cookiecutter context."""
 
     project_name: str = f"Python Project {datetime.now(tz=timezone(timedelta(hours=8))).strftime('%Y%m%d%H%M%S')}"
@@ -31,28 +33,6 @@ class Context(BaseModel):
     author: str = "Anonymous"
     email: str = "Anonymous"
     description: str = "The {{ cookiecutter.project_name }} application"
-    dev_dependencies: list[str] = Field(default_factory=get_dev_dependencies, serialization_alias="__dev_dependencies")
-
-    @computed_field(alias="__py_version")
-    def py_version(self) -> str:  # noqa: PLR6301
-        """The version of python.
-
-        Returns:
-            str
-        """
-        return f"{sys.version_info.major}.{sys.version_info.minor}"
-
-    @computed_field(alias="__ruff_version")
-    def ruff_version(self) -> str:
-        """The version of ruff.
-
-        Returns:
-            str
-        """
-        for _ in self.dev_dependencies:
-            if "ruff" in _:
-                return str(_)
-        return "ruff"
 
 
 VERSION_PART = 3
@@ -90,8 +70,21 @@ def get_dependency_versions(*dependencies: str) -> list[str]:
 def generate_context() -> None:
     """Generate cookiecutter.json."""
     context = Context()
+    dev_dependencies = get_dev_dependencies()
+    ruff_version = "ruff"
+    for _ in dev_dependencies:
+        if "ruff" in _:
+            ruff_version = str(_)
     with pathlib.Path("cookiecutter.json").open("w", encoding="utf-8") as file:
-        file.write(context.model_dump_json(by_alias=True))
+        json.dump(
+            {
+                **asdict(context),
+                "__py_version": f"{sys.version_info.major}.{sys.version_info.minor}",
+                "__dev_dependencies": dev_dependencies,
+                "__ruff_version": ruff_version,
+            },
+            file,
+        )
 
 
 def main() -> None:
