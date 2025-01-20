@@ -94,12 +94,11 @@ select = [
   "W", # pycodestyle Warning
   "YTT", # flake8-2020
 ]
-ignore = ["CPY001", "COM812"]
+ignore = ["CPY001", "COM812", "D100"]
 
 [tool.ruff.lint.extend-per-file-ignores]
 "test_*.py" = ["S101"]
 "__init__.py" = ["D104"]
-"tests/model/*" = ["N999"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true

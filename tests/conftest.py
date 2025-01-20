@@ -1,8 +1,3 @@
-"""The asynchronous rpc application.
-
-Copyright (c) 2023-present 善假于PC也 (zlhywlf).
-"""
-
 import pathlib
 from typing import Any, Generator
 
@@ -11,7 +6,7 @@ import pytest
 import yaml
 from faker import Faker
 
-from tests.model.Cookies import Cookies
+from tests.model.cookies import Cookies
 
 
 @pytest.fixture(scope="session")

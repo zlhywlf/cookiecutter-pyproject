@@ -1,8 +1,3 @@
-"""The asynchronous rpc application.
-
-Copyright (c) 2023-present 善假于PC也 (zlhywlf).
-"""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable
@@ -10,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from cookiecutter.main import cookiecutter
 from jinja2 import Environment
 
-from tests.model.Result import Result
+from tests.model.result import Result
 
 if TYPE_CHECKING:
     import py

@@ -1,12 +1,7 @@
-"""The asynchronous rpc application.
-
-Copyright (c) 2023-present 善假于PC也 (zlhywlf).
-"""
-
 from faker import Faker
 
 from hooks.pre_prompt import Context
-from tests.model.Cookies import Cookies
+from tests.model.cookies import Cookies
 
 
 def test_bake_project(cookies: Cookies, faker: Faker) -> None:
