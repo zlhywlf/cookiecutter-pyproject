@@ -74,7 +74,8 @@ def generate_context() -> None:
     ruff_version = "ruff"
     for _ in dev_dependencies:
         if "ruff" in _:
-            ruff_version = str(_)
+            ruff_version = _
+            break
     with pathlib.Path("cookiecutter.json").open("w", encoding="utf-8") as file:
         json.dump(
             {
