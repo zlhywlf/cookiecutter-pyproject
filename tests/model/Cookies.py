@@ -3,14 +3,18 @@
 Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
-from typing import Any, Callable, Optional, Union
+from __future__ import annotations
 
-import py
+from typing import TYPE_CHECKING, Any, Callable
+
 from cookiecutter.main import cookiecutter
 from jinja2 import Environment
-from pydantic import BaseModel
 
 from tests.model.Result import Result
+
+if TYPE_CHECKING:
+    import py
+    from pydantic import BaseModel
 
 
 class Cookies:
@@ -24,16 +28,24 @@ class Cookies:
         self._counter = 0
 
     def _new_output_dir(self) -> py.path.local:
-        """Obtain the generation path."""
+        """Obtain the generation path.
+
+        Returns:
+            local
+        """
         dirname = f"bake{self._counter:02d}"
         output_dir = self._output_factory(dirname)
         self._counter += 1
         return output_dir
 
     def bake(self, context: BaseModel) -> Result:
-        """Generate project files."""
-        exception: Optional[Union[Exception, SystemExit]] = None
-        exit_code: Optional[Union[str, int]] = 0
+        """Generate project files.
+
+        Returns:
+            Result
+        """
+        exception: Exception | SystemExit | None = None
+        exit_code: str | int | None = 0
         project_dir = None
         extra_context = context.model_dump()
         try:

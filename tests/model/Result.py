@@ -3,8 +3,9 @@
 Copyright (c) 2023-present 善假于PC也 (zlhywlf).
 """
 
+from __future__ import annotations
+
 import pathlib
-from typing import Optional, Union
 
 
 class Result:
@@ -12,9 +13,9 @@ class Result:
 
     def __init__(
         self,
-        exception: Optional[Union[Exception, SystemExit]],
-        exit_code: Optional[Union[str, int]],
-        project_dir: Optional[str],
+        exception: Exception | SystemExit | None,
+        exit_code: str | int | None,
+        project_dir: str | None,
     ) -> None:
         """Init."""
         self.exception = exception
@@ -22,7 +23,7 @@ class Result:
         self._project_dir = project_dir
 
     @property
-    def project_path(self) -> Optional[pathlib.Path]:
+    def project_path(self) -> pathlib.Path | None:
         """Return a pathlib.Path object if no exception occurred."""
         if self.exception is None and self._project_dir:
             return pathlib.Path(self._project_dir)

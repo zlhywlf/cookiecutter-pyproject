@@ -16,13 +16,21 @@ from tests.model.Cookies import Cookies
 
 @pytest.fixture(scope="session")
 def faker() -> Faker:
-    """Get data faker."""
+    """Get data faker.
+
+    Returns:
+        Faker
+    """
     return Faker()
 
 
 @pytest.fixture(scope="session")
 def config_file(tmpdir_factory: pytest.TempdirFactory) -> py.path.local:
-    """Generate cookiecutter configuration file."""
+    """Generate cookiecutter configuration file.
+
+    Returns:
+        local
+    """
     user_dir = tmpdir_factory.mktemp("user_dir")
     config_file = user_dir.join(pathlib.Path("config"))
     config = {
