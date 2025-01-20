@@ -2,15 +2,15 @@ root = true
 
 [*]
 indent_style = space
-indent_size = 4
+indent_size = 2
 insert_final_newline = true
 trim_trailing_whitespace = true
 end_of_line = lf
 charset = utf-8
 max_line_length = 120
 
-[*.{yml,yaml,json,js,css,html,toml,proto,sh}]
-indent_size = 2
+[*.py]
+indent_size = 4
 
 [*.md]
 trim_trailing_whitespace = false
