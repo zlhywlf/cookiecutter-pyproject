@@ -94,11 +94,19 @@ select = [
   "W", # pycodestyle Warning
   "YTT", # flake8-2020
 ]
-ignore = ["CPY001", "COM812", "D100"]
+ignore = [
+  "CPY001", # Missing copyright notice at top of file
+  "COM812", # Trailing comma missing
+  "D100", # Missing docstring in public module
+]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"test_*.py" = ["S101"]
-"__init__.py" = ["D104"]
+"test_*.py" = [
+  "S101", # Use of assert detected
+]
+"__init__.py" = [
+  "D104", # Missing docstring in public package
+]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
