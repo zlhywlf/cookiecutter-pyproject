@@ -16,7 +16,7 @@ def get_dev_dependencies() -> list[str]:
     Returns:
         list
     """
-    dev_dependencies = ["ruff", "pytest", "faker", "mypy", "build", "pre-commit", "pytest-cov", "pytest-env"]
+    dev_dependencies = ["ruff", "pytest", "faker", "mypy", "build", "pre-commit", "pytest-cov", "pytest-env", "pytest-mock"]
     dev_dependencies.sort()
     subprocess.check_call(  # noqa:  S603
         ["pip3", "install", "-i", "https://mirrors.aliyun.com/pypi/simple", *dev_dependencies],  # noqa:  S607
