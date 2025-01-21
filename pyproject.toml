@@ -126,5 +126,5 @@ python_version = "3.7"
 files = ["tests", "hooks"]
 
 [[tool.mypy.overrides]]
-module = ["py", "yaml", "cookiecutter.generate", "cookiecutter.main", "cookiecutter.prompt"]
+module = ["py", "yaml", "cookiecutter.*"]
 ignore_missing_imports = true

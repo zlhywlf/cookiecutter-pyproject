@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import os
 from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING
 
+from cookiecutter.hooks import run_script as real_run_script
 from cookiecutter.main import cookiecutter
 from jinja2 import Environment
+
+from hooks.pre_prompt import main
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -51,3 +55,12 @@ class Baker:
                 real = Environment(autoescape=True).from_string(v).render(cookiecutter=extra_context)
                 setattr(context, k, real)
         return Result(exception=None, exit_code=0, project_dir=project_dir)
+
+
+def run_script(script_path: str, cwd: Path) -> None:
+    """Execute a script from a working directory."""
+    if "pre_prompt.py" in script_path:
+        os.chdir(cwd)
+        main()
+    else:
+        real_run_script(script_path, cwd)

@@ -5,8 +5,9 @@ import py
 import pytest
 import yaml
 from faker import Faker
+from pytest_mock import MockerFixture
 
-from tests.core import Baker
+from tests.core import Baker, run_script
 
 
 @pytest.fixture(scope="session")
@@ -41,8 +42,10 @@ def config_path(tmpdir_factory: pytest.TempdirFactory) -> py.path.local:
 
 
 @pytest.fixture
-def baker(tmpdir: py.path.local, config_path: py.path.local) -> Generator[Baker, Any, None]:
+def baker(tmpdir: py.path.local, config_path: py.path.local, mocker: MockerFixture) -> Generator[Baker, Any, None]:
     """Yield an instance of the Cookies helper class that can be used to generate a project from a template."""
+    mocker.patch("cookiecutter.hooks.run_script", new=run_script)
+    mocker.patch("hooks.pre_prompt.subprocess")
     output_path = tmpdir.mkdir("cookies")
     yield Baker(pathlib.Path(), output_path, config_path)
     output_path.remove()
