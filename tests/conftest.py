@@ -12,20 +12,29 @@ from tests.core import Baker, run_script
 
 @pytest.fixture(scope="session")
 def faker() -> Faker:
-    """Get data faker.
+    """Create and return a session-scoped Faker instance.
+
+    This fixture provides a Faker instance that is shared across the entire test session.
+    Using a session scope ensures that the Faker instance is created only once, improving test efficiency.
 
     Returns:
-        Faker
+        Faker: An instance of Faker for generating fake data.
     """
     return Faker()
 
 
 @pytest.fixture(scope="session")
 def config_path(tmpdir_factory: pytest.TempdirFactory) -> py.path.local:
-    """Generate cookiecutter configuration file.
+    """Create and return a configuration file path for the test session.
+
+    This fixture sets up a temporary user directory containing a `config.yaml` file.
+    The configuration file includes paths to directories used for storing cookiecutters and replay data.
+
+    Args:
+        tmpdir_factory: A pytest fixture that provides a temporary directory factory.
 
     Returns:
-        local
+        py.path.local: Path to the created `config.yaml` file.
     """
     user_dir = tmpdir_factory.mktemp("user_dir")
     config = user_dir.join(pathlib.Path("config.yaml"))
@@ -43,7 +52,26 @@ def config_path(tmpdir_factory: pytest.TempdirFactory) -> py.path.local:
 
 @pytest.fixture
 def baker(tmpdir: py.path.local, config_path: py.path.local, mocker: MockerFixture) -> Generator[Baker, Any, None]:
-    """Yield an instance of the Cookies helper class that can be used to generate a project from a template."""
+    """Create and return a Baker instance for testing purposes.
+
+    This fixture sets up a `Baker` instance by mocking certain functions and creating temporary directories.
+    It ensures that the `Baker` instance is properly initialized and cleaned up after use.
+
+    Args:
+        tmpdir: A pytest fixture providing a temporary directory.
+        config_path: Path to the configuration file created by the `config_path` fixture.
+        mocker: A pytest-mock fixture used to mock objects and methods.
+
+    Yields:
+        Baker: An instance of Baker configured with the provided parameters.
+
+    Notes:
+        - Mocks the `run_script` function in `cookiecutter.hooks`.
+        - Mocks the `subprocess` module in `hooks.pre_prompt`.
+        - Creates a temporary output directory named `cookies`.
+        - Cleans up the temporary output directory after tests.
+    """
+    # Mock the run_script function in cookiecutter.hooks
     mocker.patch("cookiecutter.hooks.run_script", new=run_script)
     mocker.patch("hooks.pre_prompt.subprocess")
     output_path = tmpdir.mkdir("cookies")
