@@ -9,29 +9,18 @@ from datetime import datetime, timedelta, timezone
 
 import pkg_resources  # type: ignore[import]
 
-
-def get_dev_dependencies() -> list[str]:
-    """Dev dependencies.
-
-    Returns:
-        list
-    """
-    dev_dependencies = [
-        "ruff",
-        "pytest",
-        "faker",
-        "mypy",
-        "build",
-        "pre-commit",
-        "pytest-cov",
-        "pytest-env",
-        "pytest-mock",
-    ]
-    dev_dependencies.sort()
-    subprocess.check_call(  # noqa:  S603
-        ["pip3", "install", "-i", "https://mirrors.aliyun.com/pypi/simple", *dev_dependencies],  # noqa:  S607
-    )
-    return get_dependency_versions(*dev_dependencies)
+VERSION_PART = 3
+DEV_DEPENDENCIES = [
+    "ruff",
+    "pytest",
+    "faker",
+    "mypy",
+    "build",
+    "pre-commit",
+    "pytest-cov",
+    "pytest-env",
+    "pytest-mock",
+]
 
 
 @dataclass
@@ -43,9 +32,6 @@ class Context:
     author: str = "Anonymous"
     email: str = "Anonymous"
     description: str = "The {{ cookiecutter.project_name }} application"
-
-
-VERSION_PART = 3
 
 
 def modify_last_digit(version: str) -> str:
@@ -61,46 +47,44 @@ def modify_last_digit(version: str) -> str:
     return "==" + version
 
 
-def get_dependency_versions(*dependencies: str) -> list[str]:
+def get_dev_dependencies() -> dict[str, str]:
     """Get dependency versions.
 
     Returns:
         list
     """
-    versions = []
+    subprocess.check_call(  # noqa:  S603
+        ["pip3", "install", "-i", "https://mirrors.aliyun.com/pypi/simple", *DEV_DEPENDENCIES],  # noqa:  S607
+    )
+    versions = {}
     try:
-        for dependency in dependencies:
+        for dependency in DEV_DEPENDENCIES:
             version = pkg_resources.get_distribution(dependency).version
-            versions.append(f"{dependency}{modify_last_digit(version)}")
+            versions[dependency] = f"{dependency}{modify_last_digit(version)}"
     except pkg_resources.DistributionNotFound:
         pass
     return versions
 
 
-def generate_context() -> None:
-    """Generate cookiecutter.json."""
-    context = Context()
+def private_context() -> dict[str, str | list[str]]:
+    """Private context.
+
+    Returns:
+        dict
+    """
     dev_dependencies = get_dev_dependencies()
-    ruff_version = "ruff"
-    for _ in dev_dependencies:
-        if "ruff" in _:
-            ruff_version = _
-            break
-    with pathlib.Path("cookiecutter.json").open("w", encoding="utf-8") as file:
-        json.dump(
-            {
-                **asdict(context),
-                "__py_version": f"{sys.version_info.major}.{sys.version_info.minor}",
-                "__dev_dependencies": dev_dependencies,
-                "__ruff_version": ruff_version,
-            },
-            file,
-        )
+    return {
+        "__py_version": f"{sys.version_info.major}.{sys.version_info.minor}",
+        "__dev_dependencies": sorted(dev_dependencies.values()),
+        "__ruff_version": dev_dependencies.get("ruff", "ruff"),
+    }
 
 
 def main() -> None:
     """Pre prompt hook."""
-    generate_context()
+    context = Context()
+    with pathlib.Path("cookiecutter.json").open("w", encoding="utf-8") as file:
+        json.dump({**asdict(context), **private_context()}, file)
 
 
 if __name__ == "__main__":
