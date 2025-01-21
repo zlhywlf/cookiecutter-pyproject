@@ -25,7 +25,7 @@ DEV_DEPENDENCIES = [
 
 @dataclass
 class Context:
-    """cookiecutter context."""
+    """A data class to store project context information."""
 
     project_name: str = f"Python Project {datetime.now(tz=timezone(timedelta(hours=8))).strftime('%Y%m%d%H%M%S')}"
     project_slug: str = "{{ cookiecutter.project_name.lower().replace(' ', '_') }}"
@@ -35,10 +35,18 @@ class Context:
 
 
 def modify_last_digit(version: str) -> str:
-    """Modify the last digit of the version number to 0.
+    """Modify the last digit of the version string according to specific rules.
+
+    If the last part of the version string is a digit
+    and the entire version number consists of the expected number of parts,
+    replace the last part with '0' and prepend '~=' to the version number to indicate compatibility.
+    If the conditions are not met, prepend '==' to the version number to indicate an exact match.
+
+    Parameters:
+    version (str): The version string to be modified.
 
     Returns:
-        str
+    str: The modified version expression.
     """
     parts = version.split(".")
     if len(parts) == VERSION_PART and parts[-1].isdigit():
@@ -48,10 +56,16 @@ def modify_last_digit(version: str) -> str:
 
 
 def get_dev_dependencies() -> dict[str, str]:
-    """Get dependency versions.
+    """Install development dependencies and retrieve their version information.
+
+    This function installs predefined development dependencies using subprocess,
+    then retrieves the version information of these dependencies using pkg_resources.
+    If a DistributionNotFound exception is encountered while retrieving the dependency version,
+    it will be ignored, and the function will continue processing other dependencies.
 
     Returns:
-        list
+        A dictionary where keys are dependency names and values are version strings of the dependencies.
+        If a dependency is not found or its version cannot be retrieved, it will not be included in the result.
     """
     subprocess.check_call(  # noqa:  S603
         ["pip3", "install", "-i", "https://mirrors.aliyun.com/pypi/simple", *DEV_DEPENDENCIES],  # noqa:  S607
@@ -67,10 +81,13 @@ def get_dev_dependencies() -> dict[str, str]:
 
 
 def private_context() -> dict[str, str | list[str]]:
-    """Private context.
+    """Generates and returns a dictionary containing private context information.
 
     Returns:
-        dict
+        A dictionary with the following keys:
+        - "__py_version": A string representing the Python version in the format "major.minor".
+        - "__dev_dependencies": A sorted list of strings representing development dependencies.
+        - "__ruff_version": A string representing the version of the 'ruff' dependency, or "ruff" if not found.
     """
     dev_dependencies = get_dev_dependencies()
     return {
@@ -81,7 +98,12 @@ def private_context() -> dict[str, str | list[str]]:
 
 
 def main() -> None:
-    """Pre prompt hook."""
+    """Main function to export context information to a JSON file.
+
+    This function creates a Context instance and writes its public and private attributes
+    to the 'cookiecutter.json' file. It uses a with statement to ensure that the file
+    operations are handled safely, even if an error occurs.
+    """
     context = Context()
     with pathlib.Path("cookiecutter.json").open("w", encoding="utf-8") as file:
         json.dump({**asdict(context), **private_context()}, file)
